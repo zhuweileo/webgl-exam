@@ -1,5 +1,4 @@
 
-
 function initGlContext(id) {
     var canvas = document.getElementById(id);
     var gl = canvas.getContext('webgl');
@@ -9,9 +8,9 @@ function initGlContext(id) {
     }
 
     var positions = new Float32Array([
-        0,0,
-        0,50,
-        100,0,
+        0,0,1,
+        0,50,1,
+        100,0,1,
 
     ])
     // 程序写入GPU
@@ -27,13 +26,17 @@ function initGlContext(id) {
     gl.useProgram(program)
     gl.enableVertexAttribArray(a_position_loc)
     // 变量绑定分辨率数据
-    var u_resolution_loc = gl.getUniformLocation(program,'u_resolution')
-    gl.uniform2f(u_resolution_loc,gl.canvas.width,gl.canvas.height)
+    // var u_resolution_loc = gl.getUniformLocation(program,'u_resolution')
+    // gl.uniform2f(u_resolution_loc,gl.canvas.width,gl.canvas.height)
+
+    var u_tranform_loc = gl.getUniformLocation(program,'u_transform')
+    var projectMat = transform.project(gl.canvas.width,gl.canvas.height)
+    gl.uniformMatrix4fv(u_tranform_loc,false,projectMat)
 
     //
     var u_color = gl.getUniformLocation(program,'u_color')
 
-    var size = 2;          // 每次迭代运行提取两个单位数据
+    var size = 3;          // 每次迭代运行提取两个单位数据
     var type = gl.FLOAT;   // 每个单位的数据类型是32位浮点型
     var normalize = false; // 不需要归一化数据
     var stride = 0;        // 0 = 移动单位数量 * 每个单位占用内存（sizeof(type)）
@@ -51,6 +54,20 @@ function initGlContext(id) {
     gl.bufferData(gl.ARRAY_BUFFER,positions,gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES,0,3)
 
+
+
+}
+
+var transform = {
+    // webgl坐标系 映射为 像素坐标系
+    project: function (width,height) {
+        return [
+            2/width,0,0,0,
+            0,-2/height,0,0,
+            0,0,0,0,
+            -1,1,1,1
+        ]
+    },
 
 
 }
