@@ -16,8 +16,9 @@
 
       attribute vec4 a_position;
       uniform mat4 u_transform;
+      uniform mat4 u_rotate;
       void main() {
-         gl_Position =u_transform * a_position;
+         gl_Position = u_transform * u_rotate * a_position;
       }
 
     </script>
