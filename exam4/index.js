@@ -68,6 +68,16 @@ var transform = {
             -1,1,1,1
         ]
     },
+    rotate: function(degree) {
+        var sin = Math.sin(degree)
+        var cos = Math.cos(degree)
+        return [
+            cos, cos , 0, 0,
+            sin, -sin, 0, 0,
+            0,0,0,0,
+            0,0,1,1,
+        ]
+    }
 
 
 }
