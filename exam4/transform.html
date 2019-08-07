@@ -15,10 +15,9 @@
     <script id="2d-vertex-shader" type="notjs">
 
       attribute vec4 a_position;
-      uniform mat4 u_transform;
-      uniform mat4 u_rotate;
+      uniform mat4 u_matrix;
       void main() {
-         gl_Position = u_transform * u_rotate * a_position;
+         gl_Position = u_matrix * a_position;
       }
 
     </script>
@@ -40,6 +39,7 @@
 <body>
 <canvas width="500" height="500" id="paper"></canvas>
 <script src="../util/util.js"></script>
+<script src="../util/cuon-matrix.js"></script>
 <script src="./index.js"></script>
 </body>
 </html>

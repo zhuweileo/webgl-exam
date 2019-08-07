@@ -24,21 +24,15 @@ function initGlContext(id) {
     var a_position_loc = gl.getAttribLocation(program, 'a_position')
     gl.useProgram(program)
     gl.enableVertexAttribArray(a_position_loc)
-    // 变量绑定分辨率数据
-    // var u_resolution_loc = gl.getUniformLocation(program,'u_resolution')
-    // gl.uniform2f(u_resolution_loc,gl.canvas.width,gl.canvas.height)
 
-    var u_tranform_loc = gl.getUniformLocation(program, 'u_transform')
+    var u_matrix_loc = gl.getUniformLocation(program, 'u_matrix')
     var projectMat = transform.project(gl.canvas.width, gl.canvas.height)
-    gl.uniformMatrix4fv(u_tranform_loc, false, projectMat)
+    var mat = new Matrix4({elements:projectMat})
+    mat.rotate(0,0,0,1).translate(50,30,0)
+    gl.uniformMatrix4fv(u_matrix_loc, false, mat.elements)
 
-    //
-    var u_rotate_loc = gl.getUniformLocation(program, 'u_rotate')
-    var rotateMat = transform.translate(10,20)
-    gl.uniformMatrix4fv(u_rotate_loc, false, rotateMat)
-
-    //
     var u_color = gl.getUniformLocation(program, 'u_color')
+    gl.uniform4fv(u_color, [0.1, 0.2, 0.3, 1])
 
     var size = 3;          // 每次迭代运行提取两个单位数据
     var type = gl.FLOAT;   // 每个单位的数据类型是32位浮点型
@@ -52,9 +46,9 @@ function initGlContext(id) {
     // 清空画布
     gl.clearColor(1, 1, 0.5, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
+    gl.enable(gl.CULL_FACE);
 
     // 开画
-    gl.uniform4fv(u_color, [0.1, 0.2, 0.3, 1])
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, 3)
 
@@ -93,7 +87,6 @@ var transform = {
             x,y,z,1,
         ]
     },
-
 }
 
 initGlContext('paper');
