@@ -1,4 +1,15 @@
 var util = {
+    initWebgl: function(id){
+        var canvas = document.getElementById(id);
+        var gl = canvas.getContext('webgl');
+        if (!gl) {
+            console.log('webgl创建失败!');
+            return null
+        } else {
+            return gl
+        }
+
+    },
     createProgramFromScripts: function(gl, shaderIds) {
         var vSharderSourcea = document.getElementById(shaderIds[0]).text
         var fSharderSourcea = document.getElementById(shaderIds[1]).text
@@ -27,5 +38,5 @@ var util = {
         }
         console.log(gl.getProgramInfoLog(program));
         gl.deleteProgram(program)
-    }
+    },
 }
