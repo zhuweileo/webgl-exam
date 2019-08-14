@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-  <style>
-    #gl {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border: 1px solid #fcc;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #gl {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #fcc;
+        }
+        .action-box{
+            position: absolute;
+            right:50px;
+            top: 50px;
+            width: 300px;
+        }
+        .view-range{
+            width: 100%;
+        }
+    </style>
 
 </head>
 <body>
@@ -24,6 +33,7 @@
     gl_Position = u_matrix * a_position;
     v_color = a_color;
   }
+
 </script>
 <script type="notjs" id="fragment">
     precision mediump float;
@@ -32,7 +42,20 @@
     void main(){
       gl_FragColor = v_color;
     }
+
 </script>
+
+<div class="action-box">
+    <div class="row">
+        x:<input class="view-range" type="range" min="-1" max="1" step="0.01">
+    </div>
+    <div class="row">
+        y:<input class="view-range" type="range" min="-1" max="1" step="0.01">
+    </div>
+    <div class="row">
+        z:<input class="view-range" type="range" min="-1" max="1" step="0.01">
+    </div>
+</div>
 
 <canvas width="500" height="500" id="gl"></canvas>
 <script src="../util/util.js"></script>

@@ -46,7 +46,6 @@ function main() {
         ...blue,...blue,...blue,
         ...blue,...blue,...blue,
     ])
-    console.log(colors);
     var program = util.createProgramFromScripts(gl,['vertex','fragment'])
     gl.useProgram(program)
 
@@ -93,5 +92,31 @@ function main() {
     gl.clear(gl.COLOR_BUFFER_BIT)
 
     gl.drawArrays(gl.TRIANGLES, 0, 36)
+
+    function renderView(x,y,z) {
+        var mat = new Matrix4();
+        var viewMat = new Matrix4();
+        var projectMat = new Matrix4();
+        projectMat.setOrtho(-1,1,-1,1,-1,4)
+        viewMat.setLookAt(x,y,z, 0,0,0, 0,1,0);
+        mat.set(projectMat).multiply(viewMat)
+        gl.uniformMatrix4fv(u_matrix_loc, false, mat.elements)
+        gl.drawArrays(gl.TRIANGLES, 0, 36)
+    }
+
+    function bind() {
+        var ranges = document.querySelectorAll('.view-range')
+        ranges.forEach(function(range) {
+            range.addEventListener('input',function() {
+                var x = ranges[0].value;
+                var y = ranges[1].value;
+                var z = ranges[2].value;
+                console.log(x,y,z);
+                renderView(x,y,z);
+            })
+        })
+    }
+    bind();
 }
+
 main();
