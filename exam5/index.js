@@ -57,8 +57,10 @@ function main() {
     var viewMat = new Matrix4();
     var projectMat = new Matrix4();
 
-    projectMat.setOrtho(-1,1,-1,1,-1,4)
-    viewMat.setLookAt(0.1,1, 1, 0,0,0, 0,1,0);
+    var fovy = 30,aspect=1,near=8,far = 100;
+    // projectMat.setOrtho(-1,1,-1,1,-1,4)
+    projectMat.setPerspective(fovy,aspect,near,far)
+    viewMat.setLookAt(5,5, 5, 0,0,0, 0,1,0);
     mat.set(projectMat).multiply(viewMat)
     gl.uniformMatrix4fv(u_matrix_loc, false, mat.elements)
 
@@ -97,7 +99,8 @@ function main() {
         var mat = new Matrix4();
         var viewMat = new Matrix4();
         var projectMat = new Matrix4();
-        projectMat.setOrtho(-1,1,-1,1,-1,4)
+        // projectMat.setOrtho(-1,1,-1,1,-1,4)
+        projectMat.setPerspective(fovy,aspect,near,far)
         viewMat.setLookAt(x,y,z, 0,0,0, 0,1,0);
         mat.set(projectMat).multiply(viewMat)
         gl.uniformMatrix4fv(u_matrix_loc, false, mat.elements)
