@@ -57,10 +57,10 @@ function main() {
     var viewMat = new Matrix4();
     var projectMat = new Matrix4();
 
-    var fovy = 30,aspect=1,near=8,far = 100;
-    // projectMat.setOrtho(-1,1,-1,1,-1,4)
-    projectMat.setPerspective(fovy,aspect,near,far)
-    viewMat.setLookAt(5,5, 5, 0,0,0, 0,1,0);
+    // var fovy = 30,aspect=1,near=8,far = 100;
+    projectMat.setOrtho(-1,1,-1,1,-1,4)
+    // projectMat.setPerspective(fovy,aspect,near,far)
+    viewMat.setLookAt(8,8, 8, 0,0,0, 0,1,0);
     mat.set(projectMat).multiply(viewMat)
     gl.uniformMatrix4fv(u_matrix_loc, false, mat.elements)
 
@@ -95,12 +95,38 @@ function main() {
 
     gl.drawArrays(gl.TRIANGLES, 0, 36)
 
+    var then = 0;
+    var speed = 2;
+    var x = 5;
+    var preX = 5;
+    function animation(now) {
+        var time = now - then;
+        then = now;
+        if(preX >= x ) {
+            x -= time / 1000 * speed;
+        } else if(preX <= x) {
+            x += time / 1000 * speed;
+        }
+        var y = Math.sqrt(50 - x*x);
+        console.log(x,y)
+        renderView(x,y,7);
+        preX = x;
+        if(x <= -5 || x>=5) {
+            var t = x;
+            x = preX;
+            preX = t
+        }
+
+        requestAnimationFrame(animation)
+    }
+    animation(0);
+
     function renderView(x,y,z) {
         var mat = new Matrix4();
         var viewMat = new Matrix4();
         var projectMat = new Matrix4();
-        // projectMat.setOrtho(-1,1,-1,1,-1,4)
-        projectMat.setPerspective(fovy,aspect,near,far)
+        projectMat.setOrtho(-1,1,-1,1,8,100)
+        // projectMat.setPerspective(fovy,aspect,near,far)
         viewMat.setLookAt(x,y,z, 0,0,0, 0,1,0);
         mat.set(projectMat).multiply(viewMat)
         gl.uniformMatrix4fv(u_matrix_loc, false, mat.elements)
