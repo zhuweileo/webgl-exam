@@ -57,10 +57,10 @@ function main() {
     var viewMat = new Matrix4();
     var projectMat = new Matrix4();
 
-    // var fovy = 30,aspect=1,near=8,far = 100;
-    projectMat.setOrtho(-1,1,-1,1,-1,4)
-    // projectMat.setPerspective(fovy,aspect,near,far)
-    viewMat.setLookAt(8,8, 8, 0,0,0, 0,1,0);
+    var fovy = 30,aspect=1,near=3,far = 100;
+    // projectMat.setOrtho(-1,1,-1,1,-1,4)
+    projectMat.setPerspective(fovy,aspect,near,far)
+    viewMat.setLookAt(5,8, 0, 0,0,0, 0,1,0);
     mat.set(projectMat).multiply(viewMat)
     gl.uniformMatrix4fv(u_matrix_loc, false, mat.elements)
 
@@ -98,24 +98,25 @@ function main() {
     var then = 0;
     var speed = 2;
     var x = 5;
-    var preX = 5;
+    var decrease = true
     function animation(now) {
         var time = now - then;
         then = now;
-        if(preX >= x ) {
+        if( decrease ) {
             x -= time / 1000 * speed;
-        } else if(preX <= x) {
+            if(x <= -5) {x= -5; decrease = false; }
+        } else {
             x += time / 1000 * speed;
+            if(x >= 5) { x = 5; decrease = true; }
         }
-        var y = Math.sqrt(50 - x*x);
-        console.log(x,y)
-        renderView(x,y,7);
-        preX = x;
-        if(x <= -5 || x>=5) {
-            var t = x;
-            x = preX;
-            preX = t
+        var z = 0
+        if(decrease) {
+            z = Math.sqrt(25 - x*x);
+        } else {
+            z = -Math.sqrt(25 - x*x);
         }
+        console.log(x.toFixed(2),z.toFixed(2));
+        renderView(x,5,z);
 
         requestAnimationFrame(animation)
     }
@@ -125,8 +126,8 @@ function main() {
         var mat = new Matrix4();
         var viewMat = new Matrix4();
         var projectMat = new Matrix4();
-        projectMat.setOrtho(-1,1,-1,1,8,100)
-        // projectMat.setPerspective(fovy,aspect,near,far)
+        // projectMat.setOrtho(-1,1,-1,1,8,100)
+        projectMat.setPerspective(fovy,aspect,near,far)
         viewMat.setLookAt(x,y,z, 0,0,0, 0,1,0);
         mat.set(projectMat).multiply(viewMat)
         gl.uniformMatrix4fv(u_matrix_loc, false, mat.elements)
