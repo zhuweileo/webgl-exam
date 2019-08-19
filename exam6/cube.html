@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #gl {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #fcc;
+        }
+        .action-box{
+            position: absolute;
+            right:50px;
+            top: 50px;
+            width: 300px;
+        }
+        .view-range{
+            width: 100%;
+        }
+    </style>
+
+</head>
+<body>
+<script type="notjs" id="vertex">
+  attribute vec4 a_position;
+  attribute vec4 a_color;
+  uniform mat4 u_matrix;
+  varying vec4 v_color;
+  void main(){
+    gl_Position = u_matrix * a_position;
+    v_color = a_color;
+  }
+
+</script>
+<script type="notjs" id="fragment">
+    precision mediump float;
+    varying vec4 v_color;
+    uniform vec4 u_color;
+    void main(){
+      gl_FragColor = v_color;
+    }
+
+</script>
+
+<div class="action-box">
+    <div class="row">
+        x:<input class="view-range" type="range" min="-1" max="1" step="0.01">
+    </div>
+    <div class="row">
+        y:<input class="view-range" type="range" min="-1" max="1" step="0.01">
+    </div>
+    <div class="row">
+        z:<input class="view-range" type="range" min="-1" max="1" step="0.01">
+    </div>
+</div>
+
+<canvas width="500" height="500" id="gl"></canvas>
+<script src="../util/util.js"></script>
+<script src="../util/cuon-matrix.js"></script>
+<script src="./index.js"></script>
+</body>
+</html>
