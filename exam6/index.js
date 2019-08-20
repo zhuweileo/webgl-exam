@@ -10,27 +10,6 @@ function main() {
         return
     }
 
-    var points = new Float32Array([
-        // 前面
-        -0.5,0.5,0.5, 0.5,-0.5,0.5,  -0.5,-0.5,0.5,
-        -0.5,0.5,0.5, 0.5,0.5,0.5,   0.5,-0.5,0.5,
-        // 后面
-        0.5,0.5,-0.5, -0.5,-0.5,-0.5, 0.5,-0.5,-0.5,
-        0.5,0.5,-0.5, -0.5,0.5,-0.5, -0.5,-0.5,-0.5,
-        //上面
-        0.5,0.5,0.5,  -0.5,0.5,0.5,  -0.5,0.5,-0.5,
-        0.5,0.5,0.5,  -0.5,0.5,-0.5, 0.5,0.5,-0.5,
-        //下面
-        -0.5,-0.5,0.5,  0.5,-0.5,0.5,  -0.5,-0.5,-0.5,
-        0.5,-0.5,0.5,  0.5,-0.5,-0.5, -0.5,-0.5,-0.5,
-        //左面
-        -0.5,0.5,0.5,  -0.5,-0.5,0.5,  -0.5,0.5,-0.5,
-        -0.5,-0.5,0.5,  -0.5,-0.5,-0.5, -0.5,0.5,-0.5,
-        // 右面
-        0.5,0.5,0.5,  0.5,0.5,-0.5, 0.5,-0.5,0.5,
-        0.5,-0.5,0.5,  0.5,0.5,-0.5,  0.5,-0.5,-0.5,
-    ])
-
     var vertices = new Float32Array([
         // 正面四个点，顺时针
         -0.5,0.5,0.5, // 0
@@ -75,6 +54,7 @@ function main() {
         ...blue,...blue,...blue,
         ...blue,...blue,...blue,
     ])
+
     var program = util.createProgramFromScripts(gl,['vertex','fragment'])
     gl.useProgram(program)
 
@@ -97,7 +77,7 @@ function main() {
     gl.uniformMatrix4fv(u_matrix_loc, false, mat.elements)
 
     gl.bindBuffer(gl.ARRAY_BUFFER,poBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
     var a_position_loc = gl.getAttribLocation(program,'a_position')
     gl.enableVertexAttribArray(a_position_loc);
     var size = 3;          // 每次迭代运行提取两个单位数据
@@ -108,44 +88,49 @@ function main() {
     gl.vertexAttribPointer(
         a_position_loc, size, type, normalize, stride, offset)
 
-    gl.bindBuffer(gl.ARRAY_BUFFER,colorBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
-    var a_color_loc = gl.getAttribLocation(program,'a_color')
-    gl.enableVertexAttribArray(a_color_loc);
-    var size1 = 3;          // 每次迭代运行提取两个单位数据
-    var type1 = gl.UNSIGNED_BYTE;   // 每个单位的数据类型是32位浮点型
-    var normalize1 = true; // 不需要归一化数据
-    var stride1 = 0;        // 0 = 移动单位数量 * 每个单位占用内存（sizeof(type)）
-    var offset1 = 0;        // 从缓冲起始位置开始读取
-    gl.vertexAttribPointer(
-        a_color_loc, size1, type1, normalize1, stride1, offset1)
+    // gl.bindBuffer(gl.ARRAY_BUFFER,colorBuffer)
+    // gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW)
+    // var a_color_loc = gl.getAttribLocation(program,'a_color')
+    // gl.enableVertexAttribArray(a_color_loc);
+    // var size1 = 3;          // 每次迭代运行提取两个单位数据
+    // var type1 = gl.UNSIGNED_BYTE;   // 每个单位的数据类型是32位浮点型
+    // var normalize1 = true; // 不需要归一化数据
+    // var stride1 = 0;        // 0 = 移动单位数量 * 每个单位占用内存（sizeof(type)）
+    // var offset1 = 0;        // 从缓冲起始位置开始读取
+    // gl.vertexAttribPointer(
+    //     a_color_loc, size1, type1, normalize1, stride1, offset1)
 
     gl.enable(gl.DEPTH_TEST)
     gl.clearColor(1, 1, 1, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
-    gl.drawArrays(gl.TRIANGLES, 0, 36)
+
+    const indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,vIndex,gl.STATIC_DRAW);
+
+    gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_BYTE,0)
 
 
     function renderView(x,y,z) {
         var mat = new Matrix4();
         var viewMat = new Matrix4();
         var projectMat = new Matrix4();
-        projectMat.setOrtho(-1,1,-1,1,8,100)
+        projectMat.setOrtho(-1,1,-1,1,-1,100)
         // projectMat.setPerspective(fovy,aspect,near,far)
         viewMat.setLookAt(x,y,z, 0,0,0, 0,1,0);
         mat.set(projectMat).multiply(viewMat)
         gl.uniformMatrix4fv(u_matrix_loc, false, mat.elements)
-        gl.drawArrays(gl.TRIANGLES, 0, 36)
+
+        gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_BYTE,0)
     }
 
     function bind() {
         var ranges = document.querySelectorAll('.view-range')
         ranges.forEach(function(range) {
             range.addEventListener('input',function() {
-                var x = ranges[0].value;
-                var y = ranges[1].value;
-                var z = ranges[2].value;
-                console.log(x,y,z);
+                var x = ranges[0].value * 8;
+                var y = ranges[1].value * 8;
+                var z = ranges[2].value * 8;
                 renderView(x,y,z);
             })
         })
