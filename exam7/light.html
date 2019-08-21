@@ -29,30 +29,34 @@
 <script type="notjs" id="vertex">
   attribute vec4 a_position;
   attribute vec4 a_color;
-  attribute vec3 a_direction;
+  attribute vec4 a_direction;
+  uniform mat4 u_normal_mat;
   uniform mat4 u_matrix;
+  uniform vec3 u_environment_light_color;
+  uniform vec3 u_parallel_light_color;
+  uniform vec3 u_parallel_light_direction;
+
+
   varying vec4 v_color;
-  varying vec3 v_direction;
   void main(){
     gl_Position = u_matrix * a_position;
-    v_color = a_color;
-    v_direction = a_direction;
+    vec3 normal = normalize(vec3( u_normal_mat * a_direction) );
+    float light_angle = max( dot(u_parallel_light_direction,normal), 0.0);
+    // 表面反射光颜色 = 漫反射光颜色 + 环境反射光颜色
+    vec3 mix = a_color.rgb * u_parallel_light_color * light_angle + a_color.rgb * u_environment_light_color;
+    v_color = vec4(mix, a_color.a);
   }
+
 
 
 </script>
 <script type="notjs" id="fragment">
     precision mediump float;
     varying vec4 v_color;
-    varying vec3 v_direction;
-    uniform vec4 u_color;
-    uniform vec3 u_light;
     void main(){
-        vec3 normal = normalize(v_direction);
-        float light = dot(normal, u_light);
         gl_FragColor = v_color;
-        gl_FragColor.rgb *= light;
     }
+
 
 
 </script>
@@ -65,7 +69,7 @@
         y:<input class="view-range" type="range" value="7" min="-10" max="10" step="0.1">
     </div>
     <div class="row">
-        z:<input class="view-range" type="range" value="1" min="-10" max="10" step="0.1">
+        z:<input class="view-range" type="range" value="0" min="0" max="360" step="1">
     </div>
 </div>
 
